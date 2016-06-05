@@ -79,10 +79,8 @@ public class MaterialFilePicker {
 
     public void start() {
 
-        CompositeFilter filter = getFilter();
-
         Intent intent = new Intent(mActivity, FilePickerActivity.class);
-        intent.putExtra(FilePickerActivity.ARG_FILTER, filter);
+        intent.putExtra(FilePickerActivity.ARG_FILTER, getFilter());
 
         if (mRootPath != null) {
             intent.putExtra(FilePickerActivity.ARG_START_PATH, mRootPath);

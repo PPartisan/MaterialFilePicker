@@ -6,6 +6,7 @@ import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -70,17 +71,21 @@ public class DirectoryFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
         View view = inflater.inflate(R.layout.fragment_directory, container, false);
+
         mDirectoryRecyclerView = (EmptyRecyclerView) view.findViewById(R.id.directory_recycler_view);
         mEmptyViewGroup = (ViewGroup) view.findViewById(R.id.directory_empty_view);
+
         if (getFileColor() != -1) {
-            ImageView imageView = (ImageView) view.findViewById(R.id.fd_image);
-            TextView textView = (TextView) view.findViewById(R.id.fd_text);
+            ImageView imageView = (ImageView) mEmptyViewGroup.findViewById(R.id.fd_image);
+            //TextView textView = (TextView) mEmptyViewGroup.findViewById(R.id.fd_text);
             imageView.setColorFilter(getFileColor(), PorterDuff.Mode.SRC_IN);
-            textView.setTextColor(getFileColor());
+            //textView.setTextColor(getFileColor());
             imageView.setAlpha(0.4f);
-            textView.setAlpha(0.4f);
+            //textView.setAlpha(0.4f);
         }
+
         return view;
     }
 
