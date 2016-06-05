@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.text.method.ScrollingMovementMethod;
 import android.view.MenuItem;
 import android.widget.TextView;
 
@@ -27,6 +28,8 @@ public class FilePickerActivity extends AppCompatActivity implements DirectoryFr
 
     public static final String ARG_FILTER = "arg_filter";
 
+    public static final String ARG_FILE_COLOR = "arg_file_color";
+
     public static final String STATE_START_PATH = "state_start_path";
     private static final String STATE_CURRENT_PATH = "state_current_path";
 
@@ -36,6 +39,7 @@ public class FilePickerActivity extends AppCompatActivity implements DirectoryFr
     private Toolbar mToolbar;
     private String mStartPath = Environment.getExternalStorageDirectory().getAbsolutePath();
     private String mCurrentPath = mStartPath;
+    private int fileColor = -1;
 
     private CompositeFilter mFilter;
 
@@ -74,6 +78,9 @@ public class FilePickerActivity extends AppCompatActivity implements DirectoryFr
                 mCurrentPath = currentPath;
             }
         }
+
+        fileColor = getIntent().getIntExtra(ARG_FILE_COLOR, -1);
+
     }
 
     private void initToolbar() {
@@ -90,7 +97,18 @@ public class FilePickerActivity extends AppCompatActivity implements DirectoryFr
             f.setAccessible(true);
 
             TextView textView = (TextView) f.get(mToolbar);
+            //textView.setEllipsize(null);
+            //textView.setHorizontallyScrolling(true);
+            //textView.setFocusable(true);
+            //textView.setFocusableInTouchMode(true);
+            //textView.setMovementMethod(new ScrollingMovementMethod());
+
+            //Toolbar.LayoutParams params = (Toolbar.LayoutParams) textView.getLayoutParams();
+            //params.setMargins(params.leftMargin, params.topMargin, 32, params.bottomMargin);
+            //textView.setLayoutParams(params);
+
             textView.setEllipsize(TextUtils.TruncateAt.START);
+
         } catch (Exception ignored) {}
 
         updateTitle();
@@ -103,7 +121,7 @@ public class FilePickerActivity extends AppCompatActivity implements DirectoryFr
     private void initFragment() {
         getFragmentManager().beginTransaction()
                 .add(R.id.container, DirectoryFragment.getInstance(
-                        mStartPath, mFilter))
+                        mStartPath, mFilter, fileColor))
                 .commit();
     }
 
@@ -120,7 +138,7 @@ public class FilePickerActivity extends AppCompatActivity implements DirectoryFr
     private void addFragmentToBackStack(String path) {
         getFragmentManager().beginTransaction()
                 .replace(R.id.container, DirectoryFragment.getInstance(
-                        path, mFilter))
+                        path, mFilter, fileColor))
                 .addToBackStack(null)
                 .commit();
     }

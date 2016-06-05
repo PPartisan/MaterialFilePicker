@@ -2,12 +2,15 @@ package com.nbsp.materialfilepicker.ui;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.nbsp.materialfilepicker.R;
 import com.nbsp.materialfilepicker.filter.CompositeFilter;
@@ -15,8 +18,6 @@ import com.nbsp.materialfilepicker.utils.FileUtils;
 import com.nbsp.materialfilepicker.widget.EmptyRecyclerView;
 
 import java.io.File;
-import java.io.FileFilter;
-import java.util.ArrayList;
 
 /**
  * Created by Dimorinny on 24.10.15.
@@ -28,9 +29,11 @@ public class DirectoryFragment extends Fragment {
 
     private static final String ARG_FILE_PATH = "arg_file_path";
     private static final String ARG_FILTER = "arg_filter";
+    private static final String ARG_FILE_COLOR = "arg_file_color";
 
-    private View mEmptyView;
+    private ViewGroup mEmptyViewGroup;
     private String mPath;
+    private int color;
 
     private CompositeFilter mFilter;
 
@@ -52,10 +55,11 @@ public class DirectoryFragment extends Fragment {
     }
 
     public static DirectoryFragment getInstance(
-            String path, CompositeFilter filter) {
+            String path, CompositeFilter filter, int color) {
         DirectoryFragment instance = new DirectoryFragment();
 
         Bundle args = new Bundle();
+        args.putInt(ARG_FILE_COLOR, color);
         args.putString(ARG_FILE_PATH, path);
         args.putSerializable(ARG_FILTER, filter);
         instance.setArguments(args);
@@ -68,7 +72,15 @@ public class DirectoryFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_directory, container, false);
         mDirectoryRecyclerView = (EmptyRecyclerView) view.findViewById(R.id.directory_recycler_view);
-        mEmptyView = view.findViewById(R.id.directory_empty_view);
+        mEmptyViewGroup = (ViewGroup) view.findViewById(R.id.directory_empty_view);
+        if (getFileColor() != -1) {
+            ImageView imageView = (ImageView) view.findViewById(R.id.fd_image);
+            TextView textView = (TextView) view.findViewById(R.id.fd_text);
+            imageView.setColorFilter(getFileColor(), PorterDuff.Mode.SRC_IN);
+            textView.setTextColor(getFileColor());
+            imageView.setAlpha(0.4f);
+            textView.setAlpha(0.4f);
+        }
         return view;
     }
 
@@ -80,8 +92,7 @@ public class DirectoryFragment extends Fragment {
     }
 
     private void initFilesList() {
-        mDirectoryAdapter = new DirectoryAdapter(getActivity(),
-                FileUtils.getFileListByDirPath(mPath, mFilter));
+        mDirectoryAdapter = new DirectoryAdapter(FileUtils.getFileListByDirPath(mPath, mFilter), getFileColor());
 
         mDirectoryAdapter.setOnItemClickListener(new DirectoryAdapter.OnItemClickListener() {
             @Override
@@ -94,7 +105,7 @@ public class DirectoryFragment extends Fragment {
 
         mDirectoryRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mDirectoryRecyclerView.setAdapter(mDirectoryAdapter);
-        mDirectoryRecyclerView.setEmptyView(mEmptyView);
+        mDirectoryRecyclerView.setEmptyView(mEmptyViewGroup);
     }
 
     @SuppressWarnings("unchecked")
@@ -104,5 +115,9 @@ public class DirectoryFragment extends Fragment {
         }
 
         mFilter = (CompositeFilter) getArguments().getSerializable(ARG_FILTER);
+    }
+
+    private int getFileColor() {
+        return getArguments().getInt(ARG_FILE_COLOR, -1);
     }
 }

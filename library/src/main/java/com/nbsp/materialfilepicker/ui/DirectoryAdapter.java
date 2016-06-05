@@ -1,6 +1,6 @@
 package com.nbsp.materialfilepicker.ui;
 
-import android.content.Context;
+import android.graphics.PorterDuff;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,7 +25,7 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.Dire
 
     public class DirectoryViewHolder extends RecyclerView.ViewHolder {
         private ImageView mFileImage;
-        private TextView mFileTite;
+        private TextView mFileTitle;
         private TextView mFileSubtitle;
 
         public DirectoryViewHolder(View itemView, final OnItemClickListener clickListener) {
@@ -39,18 +39,24 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.Dire
             });
 
             mFileImage = (ImageView) itemView.findViewById(R.id.item_file_image);
-            mFileTite = (TextView) itemView.findViewById(R.id.item_file_title);
+            mFileTitle = (TextView) itemView.findViewById(R.id.item_file_title);
             mFileSubtitle = (TextView) itemView.findViewById(R.id.item_file_subtitle);
         }
     }
 
     private List<File> mFiles;
-    private Context mContext;
     private OnItemClickListener mOnItemClickListener;
 
-    public DirectoryAdapter(Context context, List<File> files) {
-        mContext = context;
+    private final int fileColor;
+
+    public DirectoryAdapter(List<File> files) {
         mFiles = files;
+        fileColor = -1;
+    }
+
+    public DirectoryAdapter(List<File> files, int fileColor) {
+        mFiles = files;
+        this.fileColor = fileColor;
     }
 
     public void setOnItemClickListener(OnItemClickListener listener) {
@@ -72,8 +78,11 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.Dire
 
         FileTypeUtils.FileType fileType = FileTypeUtils.getFileType(currentFile);
         holder.mFileImage.setImageResource(fileType.getIcon());
+        if (fileColor != -1) {
+            holder.mFileImage.setColorFilter(fileColor, PorterDuff.Mode.SRC_IN);
+        }
         holder.mFileSubtitle.setText(fileType.getDescription());
-        holder.mFileTite.setText(currentFile.getName());
+        holder.mFileTitle.setText(currentFile.getName());
     }
 
     @Override

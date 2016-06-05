@@ -2,6 +2,7 @@ package com.nbsp.materialfilepicker;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 
 import com.nbsp.materialfilepicker.filter.CompositeFilter;
 import com.nbsp.materialfilepicker.filter.HiddenFilter;
@@ -24,16 +25,11 @@ public class MaterialFilePicker {
     private String mCurrentPath;
     private Boolean mShowHidden = false;
 
-    public MaterialFilePicker() {}
+    private int color = -1;
 
-    public MaterialFilePicker withActivity(Activity activity) {
+    public MaterialFilePicker(@NonNull Activity activity, @NonNull Integer requestCode) {
         mActivity = activity;
-        return this;
-    }
-
-    public MaterialFilePicker withRequestCode(int requestCode) {
         mRequestCode = requestCode;
-        return this;
     }
 
     public MaterialFilePicker withFilter(Pattern pattern) {
@@ -61,6 +57,11 @@ public class MaterialFilePicker {
         return this;
     }
 
+    public MaterialFilePicker withFileColor(int color) {
+        this.color = color;
+        return this;
+    }
+
     private CompositeFilter getFilter() {
         ArrayList<FileFilter> filters = new ArrayList<>();
 
@@ -73,16 +74,10 @@ public class MaterialFilePicker {
         }
 
         return new CompositeFilter(filters);
+
     }
 
     public void start() {
-        if (mActivity == null) {
-            throw new RuntimeException("You must pass activity by calling withActivity method");
-        }
-
-        if (mRequestCode == null) {
-            throw new RuntimeException("You must pass request code by calling withRequestCode method");
-        }
 
         CompositeFilter filter = getFilter();
 
@@ -96,6 +91,9 @@ public class MaterialFilePicker {
         if (mCurrentPath != null) {
             intent.putExtra(FilePickerActivity.ARG_CURRENT_PATH, mCurrentPath);
         }
+
+        intent.putExtra(FilePickerActivity.ARG_FILE_COLOR, color);
+
         mActivity.startActivityForResult(intent, mRequestCode);
     }
 }
